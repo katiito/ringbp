@@ -63,7 +63,6 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
                             prop.asym = prop.asym,
                             delayfn = delayfn,
                             k = k)
-
   # Preallocate
   effective_r0_vect <- c()
   cases_in_gen_vect <- c()
@@ -71,7 +70,7 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
 
   # Model loop
   while (latest.onset < cap_max_days & total.cases < cap_cases & !extinct) {
-
+    
     out <- outbreak_step(case_data = case_data,
                              disp.iso = disp.iso,
                              disp.com = disp.com,
@@ -119,5 +118,6 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
                                                           na.rm = TRUE),
                                         cases_per_gen = list(cases_in_gen_vect))]
   # return
-  return(weekly_cases)
+  # return(weekly_cases)
+  return(case_data)
 }

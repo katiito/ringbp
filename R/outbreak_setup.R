@@ -22,6 +22,7 @@
 #'}
 outbreak_setup <- function(num.initial.cases, incfn, delayfn, k, prop.asym) {
   # Set up table of initial cases
+  
   inc_samples <- incfn(num.initial.cases)
 
   case_data <- data.table(exposure = rep(0, num.initial.cases), # Exposure time of 0 for all initial cases
