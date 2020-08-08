@@ -2,6 +2,7 @@
 #' @author Joel Hellewell
 #'
 #' @param num.initial.cases Integer number of initial cases
+#' @param initial.case.adult 1 for adult, 0 for child
 #' @param incfn function that samples from incubation period Weibull distribution; generated using dist_setup
 #' @param delayfn function that samples from the onset-to-hospitalisation delay Weibull distribution; generated using dist_setup
 #' @param k Numeric skew parameter for sampling the serial interval from the incubation period
@@ -20,7 +21,7 @@
 #' delayfn <- dist_setup(delay_shape, delay_scale)
 #' outbreak_setup(num.initial.cases = 5,incfn,delayfn,k=1.95,prop.asym=0)
 #'}
-outbreak_setup <- function(num.initial.cases, incfn, delayfn, k, prop.asym) {
+outbreak_setup <- function(num.initial.cases, initial.case.adult, incfn, delayfn, k, prop.asym) {
   # Set up table of initial cases
   
   inc_samples <- incfn(num.initial.cases)
@@ -29,6 +30,7 @@ outbreak_setup <- function(num.initial.cases, incfn, delayfn, k, prop.asym) {
                           asym = purrr::rbernoulli(num.initial.cases, prop.asym),
                           caseid = 1:(num.initial.cases), # set case id
                           infector = 0,
+                          adult = initial.case.adult,
                           missed = TRUE,
                           onset = inc_samples,
                           new_cases = NA)

@@ -35,9 +35,10 @@
 #'                            k = 1.95,
 #'                            quarantine = FALSE)
 #'}
-outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
+outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, prop.ascertain = NULL,
                            cap_max_days = NULL, cap_cases = NULL,
                            r0isolated = NULL, r0community = NULL,
+                           r0community_a = NULL, r0community_c = NULL
                            disp.iso = NULL, disp.com = NULL,
                            k = NULL, delay_shape = NULL,
                            delay_scale = NULL, prop.asym = NULL,
@@ -59,6 +60,7 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
 
   # Initial setup
   case_data <- outbreak_setup(num.initial.cases = num.initial.cases,
+                            initial.case.adult = initial.case.adult,
                             incfn = incfn,
                             prop.asym = prop.asym,
                             delayfn = delayfn,
@@ -76,6 +78,8 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
                              disp.com = disp.com,
                              r0isolated = r0isolated,
                              r0community = r0community,
+                             r0community_a = r0community_a,
+                             r0community_c = r0community_c,
                              incfn = incfn,
                              delayfn = delayfn,
                              prop.ascertain = prop.ascertain,

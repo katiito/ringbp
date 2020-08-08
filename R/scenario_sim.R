@@ -1,13 +1,16 @@
 #' Run a specified number of simulations with identical parameters
-#' @author Joel Hellewell
+#' @author Joel Hellewell / Katie Atkins
 #' @param n.sim number of simulations to run
 #' @param num.initial.cases Initial number of cases in each initial cluster
 #' @param num.initial.clusters Number of initial clusters
+#' @param initial.case.adult 1 for adult, 0 for child
 #' @param prop.ascertain Probability that cases are ascertained by contact tracing
 #' @param cap_max_days Maximum number of days to run process for
 #' @param cap_cases Maximum number of cases to run process for
 #' @param r0isolated basic reproduction number for isolated cases
 #' @param r0community basic reproduction number for non-isolated cases
+#' @param r0community_a basic reproduction number for non-isolated cases (adults)
+#' @param r0community_c basic reproduction number for non-isolated cases (children)
 #' @param disp.iso dispersion parameter for negative binomial distribution for isolated cases
 #' @param disp.com dispersion parameter for negative binomial distribution for non-isolated cases
 #' @param delay_shape shape of distribution for delay between symptom onset and isolation
@@ -35,7 +38,8 @@
 #' #' }
 #'
 scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NULL, cap_cases = NULL,
-                         r0isolated = NULL, r0community = NULL, disp.iso = NULL, disp.com = NULL, k = NULL,
+                         r0isolated = NULL, r0community = NULL, r0community_a = NULL, r0community_c = NULL,
+                         disp.iso = NULL, disp.com = NULL, k = NULL, initial.case.adult = NULL,
                          delay_shape = NULL, delay_scale = NULL, num.initial.cases = NULL, prop.asym = NULL,
                          quarantine = NULL) {
  
@@ -47,6 +51,9 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                                                    cap_cases = cap_cases,
                                                    r0isolated = r0isolated,
                                                    r0community = r0community,
+                                                   r0community_a = r0community_c,
+                                                   r0community_a = r0community_c,
+                                                   initial.case.adult = initial.case.adult,
                                                    disp.iso = disp.iso,
                                                    disp.com = disp.com,
                                                    delay_shape = delay_shape,
