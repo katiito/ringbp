@@ -38,6 +38,24 @@ inf_fn <- function(inc_samp = NULL, k = NULL) {
   return(out)
 }
 
+adult_fn <- function(inc = NULL, R.adult = NULL, R.child = NULL, disp.com = NULL) {
+  
+  # calculate the prob of inc offspring from both adult and child distributions
+  p_a <- dnbinom(x = inc, 
+                 size = disp.com,
+                 mu = R.adult)
+  p_c <- dnbinom(x = inc, 
+                 size = disp.com,
+                 mu = R.child)
+  # assigns T/F to whether each of the offspring are adults
+  
+  out <- purrr::rbernoulli(n = inc,
+                      p = p_a/(p_a+p_c))
+
+  
+  return(out)
+}
+
 #' Calculate proportion of runs that have controlled outbreak
 #'
 #' @author Joel Hellewell
