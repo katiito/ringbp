@@ -1,7 +1,8 @@
-source("outbreak_setup.R")
-source("outbreak_step")
-source("outbreak_model.R")
-source("aux_functions.R")
+# source other R files instead of using the ringbp library
+source("R/outbreak_setup.R")
+source("R/outbreak_step.R")
+source("R/outbreak_model.R")
+source("R/aux_functions.R")
 
 #' Run a specified number of simulations with identical parameters
 #' @author Joel Hellewell / Katie Atkins
