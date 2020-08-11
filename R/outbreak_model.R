@@ -4,6 +4,8 @@
 #' @inheritParams outbreak_step
 #' @param delay_shape numeric shape parameter of delay distribution
 #' @param delay_scale numeric scale parameter of delay distribution
+#' @param rel.infectiousness.c relative infectiousness of children to adults
+#' @param rel.susceptibility.c relative susceptibility of children to adults
 #'
 #' @return data.table of cases by week, cumulative cases, and the effective reproduction number of the outreak
 #' @export
@@ -38,21 +40,31 @@
 outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, prop.ascertain = NULL,
                            cap_max_days = NULL, cap_cases = NULL,
                            r0isolated = NULL, r0community = NULL,
-                           r0community_aa = NULL, r0community_cc = NULL,
-                           r0community_ac = NULL, r0community_ca = NULL,
+                           rel.infectiousness.c = NULL, rel.susceptibility.c = NULL,
                            disp.iso = NULL, disp.com = NULL,
                            k = NULL, delay_shape = NULL,
-                           delay_scale = NULL, prop.asym = NULL,
+                           delay_scale = NULL, sample_shape = NULL, 
+                           sample_scale = NULL, prop.asym = NULL, prop.seq = NULL,
                            quarantine = NULL) {
 
+  
   # Set up functions to sample from distributions
   # incubation period sampling function
   incfn <- dist_setup(dist_shape = 2.322737,
                       dist_scale = 6.492272)
   # incfn <- dist_setup(dist_shape = 3.303525,dist_scale = 6.68849) # incubation function for ECDC run
   # onset to isolation delay sampling function
-  delayfn <- dist_setup(delay_shape,
-                        delay_scale)
+  delayfn <- dist_setup(delay_shape = 1.651524,
+                        delay_scale = 4.287786)
+  # onset to sampling delay sampling function
+  samplefn <- dist_setup(sample_shape,
+                         sample_scale)
+  
+  
+  #Set parameter values for age group Rs
+  r0params <- parameter_setup(rel.infectiousness.c = rel.infectiousness.c,
+                              rel.susceptibility.c = rel.susceptibility.c, 
+                              r0community = r0community)
 
   # Set initial values for loop indices
   total.cases <- num.initial.cases
@@ -64,7 +76,9 @@ outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, 
                             initial.case.adult = initial.case.adult,
                             incfn = incfn,
                             prop.asym = prop.asym,
+                            prop.seq = prop.seq,
                             delayfn = delayfn,
+                            samplefn = samplefn,
                             k = k)
   # Preallocate
   effective_r0_vect <- c()
@@ -79,13 +93,15 @@ outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, 
                              disp.com = disp.com,
                              r0isolated = r0isolated,
                              r0community = r0community,
-                             r0community_aa = r0community_aa,
-                             r0community_cc = r0community_cc,
-                             r0community_ac = r0community_ac,
-                             r0community_ca = r0community_ca,
+                             r0community_aa = r0params$r0community_aa,
+                             r0community_cc = r0params$r0community_cc,
+                             r0community_ac = r0params$r0community_ac,
+                             r0community_ca = r0params$r0community_ca,
                              incfn = incfn,
                              delayfn = delayfn,
+                             samplefn = samplefn,
                              prop.ascertain = prop.ascertain,
+                             prop.seq = prop.seq,
                              k = k,
                              quarantine = quarantine,
                              prop.asym = prop.asym)

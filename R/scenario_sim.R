@@ -9,14 +9,13 @@
 #' @param cap_cases Maximum number of cases to run process for
 #' @param r0isolated basic reproduction number for isolated cases
 #' @param r0community basic reproduction number for non-isolated cases
-#' @param r0community_aa basic reproduction number for non-isolated cases (adults-adults)
-#' @param r0community_cc basic reproduction number for non-isolated cases (children-children)
-#' @param r0community_ac basic reproduction number for non-isolated cases (adults-children)
-#' @param r0community_ca basic reproduction number for non-isolated cases (children-adults)
+#' @param rel.infectiousness.c relative infectiousness of children to adults
+#' @param rel.susceptibility.c relative susceptibility of children to adults
+#' @param prop.seq Probability that cases are sequenced
 #' @param disp.iso dispersion parameter for negative binomial distribution for isolated cases
 #' @param disp.com dispersion parameter for negative binomial distribution for non-isolated cases
-#' @param delay_shape shape of distribution for delay between symptom onset and isolation
-#' @param delay_scale scale of distribution for delay between symptom onset and isolation
+#' @param sample_shape shape of distribution for delay between symptom onset and sampling
+#' @param sample_scale scale of distribution for delay between symptom onset and sampling
 #'
 #' @importFrom purrr safely
 #' @return
@@ -40,32 +39,36 @@
 #' #' }
 #'
 scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NULL, cap_cases = NULL,
-                         r0isolated = NULL, r0community = NULL, r0community_aa = NULL, r0community_cc = NULL,
-                         r0community_ac = NULL, r0community_ca = NULL,
+                         r0isolated = NULL, r0community = NULL, 
+                         rel.infectiousness.c = NULL, rel.susceptibility.c = NULL,
                          disp.iso = NULL, disp.com = NULL, k = NULL, initial.case.adult = NULL,
-                         delay_shape = NULL, delay_scale = NULL, num.initial.cases = NULL, prop.asym = NULL,
-                         quarantine = NULL) {
+                         delay_shape = NULL, delay_scale = NULL,
+                         sample_shape = NULL, sample_scale = NULL,num.initial.cases = NULL, prop.asym = NULL,
+                         prop.seq = NULL, quarantine = NULL) {
  
   # Run n.sim number of model runs and put them all together in a big data.frame
   
-  res <- outbreak_model(num.initial.cases = num.initial.cases,
+  res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
                                                    prop.ascertain = prop.ascertain,
                                                    cap_max_days = cap_max_days,
                                                    cap_cases = cap_cases,
                                                    r0isolated = r0isolated,
                                                    r0community = r0community,
-                                                   r0community_aa = r0community_aa,
-                                                   r0community_cc = r0community_cc,
-                                                   r0community_ac = r0community_ac,
-                                                   r0community_ca = r0community_ca,
+                                                   rel.infectiousness.c = rel.infectiousness.c,
+                                                   rel.susceptibility.c = rel.susceptibility.c,
                                                    initial.case.adult = initial.case.adult,
                                                    disp.iso = disp.iso,
                                                    disp.com = disp.com,
                                                    delay_shape = delay_shape,
                                                    delay_scale = delay_scale,
+                                                   sample_shape = sample_shape,
+                                                   sample_scale = sample_scale,
                                                    k = k,
                                                    prop.asym = prop.asym,
-                                                   quarantine = quarantine)
+                                                   prop.seq = prop.seq,
+                                                   quarantine = quarantine))
+  
+  
   
   # res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
   #                                            prop.ascertain = prop.ascertain,
@@ -82,8 +85,9 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   #                                            quarantine = quarantine))
 
 
-  # # bind output together and add simulation index
-  # res <- data.table::rbindlist(res)
+  # bind output together and add simulation index
+  res <- data.table::rbindlist(res, idcol = "sim.number")
+  
   # res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]
-   return(res)
+  return(res)
 }
