@@ -12,6 +12,14 @@ Set your working directory to the home directory of this project
 library(data.table)
 source("R/scenario_sim.R")
 ```
+### Input: Model and parameters
+
+A transmission chain is generated using a branching process model. The following assumptions are made:
+
+- There are two age groups (0-19, child , 20+ adult) who contact each other as per the POLYMOD study (parameterised using socialmixr R package). This contact matrix is C
+- The relative infectiousness and susceptibility of a child infection can be set as arguments
+- The next generation matrix is calculated by scaling the 
+
 
 ### Generate n transmission chains
 
