@@ -1,3 +1,8 @@
+source("outbreak_setup.R")
+source("outbreak_step")
+source("outbreak_model.R")
+source("aux_functions.R")
+
 #' Run a specified number of simulations with identical parameters
 #' @author Joel Hellewell / Katie Atkins
 #' @param n.sim number of simulations to run
