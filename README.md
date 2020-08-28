@@ -69,8 +69,6 @@ tt <- scenario_sim(n.sim = 1,  # number of simulations
                               rel.infectiousness.c = 1, # relative infectiousness of child infections to adult infections
                               rel.susceptibility.c = 1, # relative susceptibility of child infections to adult infections
                               k = 0,  # skew parameter to sample serial interval from incubation period distribution
-                              sample_shape = 3,  # param1 for delay from onset to sampling (Weibull distribution)  
-                              sample_scale = 2,  # param2 for delay from onset to sampling (Weibull distribution) 
                               ####### final parameters not needed for tranmission chain generation (assuming no isolation / quarantine)
                               r0isolated = 0,  # R0 for isolated cases
                               disp.iso = 1,  # dispersal parameter (of neg binom distribution) of reproduction numbers
