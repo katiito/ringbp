@@ -57,7 +57,7 @@ Run n.sim simulations.
 
 ```r
 
-tt <- scenario_sim(scenario_sim(n.sim = 1,  # number of simulations
+tt <- scenario_sim(n.sim = 1,  # number of simulations
                               cap_cases = 100, # minimum number of cases
                               cap_max_days = 100, # minimum number of days (simulation stops after either min cases or min days has been reached in n-1 generation
                               num.initial.cases = 1,  # number of initial infected individuals
