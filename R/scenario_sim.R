@@ -97,4 +97,5 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   listout <- matrix(listin, length(tt$infector), 3)
   listout[listout[,1]==0,1] <- "None"
   write.table(listout, "transmission_network.csv", row.names = FALSE, col.names=FALSE, sep = "\t")
+  
 }
