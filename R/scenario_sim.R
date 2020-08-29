@@ -48,8 +48,7 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                          r0isolated = NULL, r0community = NULL, 
                          rel.infectiousness.c = NULL, rel.susceptibility.c = NULL,
                          disp.iso = NULL, disp.com = NULL, k = NULL, initial.case.adult = NULL,
-                         delay_shape = NULL, delay_scale = NULL,
-                         sample_shape = NULL, sample_scale = NULL,num.initial.cases = NULL, prop.asym = NULL,
+                         num.initial.cases = NULL, prop.asym = NULL,
                          prop.seq = NULL, quarantine = NULL) {
  
   # Run n.sim number of model runs and put them all together in a big data.frame
@@ -65,10 +64,6 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                                                    initial.case.adult = initial.case.adult,
                                                    disp.iso = disp.iso,
                                                    disp.com = disp.com,
-                                                   delay_shape = delay_shape,
-                                                   delay_scale = delay_scale,
-                                                   sample_shape = sample_shape,
-                                                   sample_scale = sample_scale,
                                                    k = k,
                                                    prop.asym = prop.asym,
                                                    prop.seq = prop.seq,
@@ -96,4 +91,10 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   
   # res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]
   return(res)
+  
+  # output table for FAVITES
+  listin <- c(tt$infector, tt$caseid, tt$exposure)
+  listout <- matrix(listin, length(tt$infector), 3)
+  listout[listout[,1]==0,1] <- "None"
+  write.table(listout, "transmission_network.csv", row.names = FALSE, col.names=FALSE, sep = "\t")
 }

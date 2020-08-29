@@ -42,9 +42,7 @@ outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, 
                            r0isolated = NULL, r0community = NULL,
                            rel.infectiousness.c = NULL, rel.susceptibility.c = NULL,
                            disp.iso = NULL, disp.com = NULL,
-                           k = NULL, delay_shape = NULL,
-                           delay_scale = NULL, sample_shape = NULL, 
-                           sample_scale = NULL, prop.asym = NULL, prop.seq = NULL,
+                           k = NULL, prop.asym = NULL, prop.seq = NULL,
                            quarantine = NULL) {
 
   
@@ -54,11 +52,12 @@ outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, 
                       dist_scale = 6.492272)
   # incfn <- dist_setup(dist_shape = 3.303525,dist_scale = 6.68849) # incubation function for ECDC run
   # onset to isolation delay sampling function
-  delayfn <- dist_setup(delay_shape = 1.651524,
-                        delay_scale = 4.287786)
+  delayfn <- dist_setup(dist_shape = 1.651524,
+                        dist_scale = 4.287786)
+  # delayfn <- dist_setup(delay_shape, delay_scale)
   # onset to sampling delay sampling function
-  samplefn <- dist_setup(sample_shape,
-                         sample_scale)
+  samplefn <- dist_setup(dist_shape = 3,
+                         dist_scale = 2)
   
   
   #Set parameter values for age group Rs
