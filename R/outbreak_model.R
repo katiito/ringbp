@@ -58,6 +58,9 @@ outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, 
   # onset to sampling delay sampling function
   samplefn <- dist_setup(dist_shape = 3,
                          dist_scale = 2)
+  # onset to end of infectiousness (not dependent whether asymptomatic)
+  infectiousfn = dist_setup2(dist_mean = 3.5,
+                            dist_k = 4)
   
   
   #Set parameter values for age group Rs
@@ -78,6 +81,7 @@ outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, 
                             prop.seq = prop.seq,
                             delayfn = delayfn,
                             samplefn = samplefn,
+                            infectiousfn = infectiousfn,
                             k = k)
   # Preallocate
   effective_r0_vect <- c()
@@ -99,6 +103,7 @@ outbreak_model <- function(num.initial.cases = NULL, initial.case.adult = NULL, 
                              incfn = incfn,
                              delayfn = delayfn,
                              samplefn = samplefn,
+                             infectiousfn = infectiousfn,
                              prop.ascertain = prop.ascertain,
                              prop.seq = prop.seq,
                              k = k,

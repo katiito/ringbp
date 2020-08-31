@@ -20,8 +20,6 @@ source("R/aux_functions.R")
 #' @param prop.seq Probability that cases are sequenced
 #' @param disp.iso dispersion parameter for negative binomial distribution for isolated cases
 #' @param disp.com dispersion parameter for negative binomial distribution for non-isolated cases
-#' @param sample_shape shape of distribution for delay between symptom onset and sampling
-#' @param sample_scale scale of distribution for delay between symptom onset and sampling
 #'
 #' @importFrom purrr safely
 #' @return
@@ -69,7 +67,21 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                                                    prop.seq = prop.seq,
                                                    quarantine = quarantine))
   
+  ## output table/s for FAVITES
   
+  
+  # extract the infection events and times and fix index case
+  inf <- purrr::map(tt, ~
+                     select(., infector, caseid, exposure) %>%
+                     mutate(., infector = replace(infector, infector==0, "None")))
+  rem <- purrr::map(tt, ~
+                     select(., infector = caseid, caseid = caseid, exposure = endinfectious) %>%
+                     mutate(infector = as.character(infector)))
+  din <- purrr::map2(inf, rem, ~bind_rows(.x,.y))
+  
+  # write to separate files
+  list(data = din, sim.num = 1:n.sim) %>%
+    purrr::pmap(output_csv)
   
   # res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
   #                                            prop.ascertain = prop.ascertain,
@@ -86,15 +98,7 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   #                                            quarantine = quarantine))
 
 
-  ## output table/s for FAVITES
   
-  # extract the infection events and times and fix index case
-  tt <- purrr::map(tt, ~
-                     select(., infector, caseid, exposure) %>%
-                     mutate(., infector = replace(infector, infector==0, "None")))
-  # write to separate files
-  list(data = tt, sim.num = 1:n.sim) %>%
-    purrr::pmap(output_csv)
 
  
   # res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]

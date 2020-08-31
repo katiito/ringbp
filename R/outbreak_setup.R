@@ -6,6 +6,7 @@
 #' @param incfn function that samples from incubation period Weibull distribution; generated using dist_setup
 #' @param delayfn function that samples from the onset-to-hospitalisation delay Weibull distribution; generated using dist_setup
 #' @param samplefn function that samples from onset-to-sampling period Weibull distribution; generated using dist_setup
+#' @param infectiousfn function that samples from onset-to-infectiosness period Gamma distribution; generated using dist_setup2
 #' @param k Numeric skew parameter for sampling the serial interval from the incubation period
 #' @param prop.asym Numeric proportion of infections that are sublinical (between 0 and 1)
 #' @param prop.seq Numeric proportion ofcases that are sequenced (between 0 and 1)
@@ -23,11 +24,12 @@
 #' delayfn <- dist_setup(delay_shape, delay_scale)
 #' outbreak_setup(num.initial.cases = 5,incfn,delayfn,k=1.95,prop.asym=0)
 #'}
-outbreak_setup <- function(num.initial.cases, initial.case.adult, incfn, delayfn, samplefn, k, prop.asym, prop.seq) {
+outbreak_setup <- function(num.initial.cases, initial.case.adult, incfn, delayfn, samplefn, infectiousfn, k, prop.asym, prop.seq) {
   # Set up table of initial cases
   
   inc_samples <- incfn(num.initial.cases)
   sample_samples <- samplefn(num.initial.cases)
+  infectious_samples <- infectiousfn(num.initial.cases)
 
   case_data <- data.table(exposure = rep(0, num.initial.cases), # Exposure time of 0 for all initial cases
                           asym = purrr::rbernoulli(num.initial.cases, prop.asym),
@@ -38,6 +40,7 @@ outbreak_setup <- function(num.initial.cases, initial.case.adult, incfn, delayfn
                           missed = TRUE,
                           onset = inc_samples,
                           sample = sample_samples + inc_samples,
+                          endinfectious = inc_samples + infectious_samples,
                           new_cases = NA)
 
   # set isolation time for cluster to minimum time of onset of symptoms + draw from delay distribution

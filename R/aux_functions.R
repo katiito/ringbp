@@ -2,6 +2,8 @@
 #' @author Joel Hellewell
 #' @param dist_shape numeric shape parameter of Weibull distribution
 #' @param dist_scale numeric scale parameter of Weibull distribution
+#' @param dist_mean numeric mean of Gamma distribution
+#' @param dist_k numeric shape/dispersion parameter of Gamma distribution
 #'
 #' @return partial function that takes a numeric argument for number of samples
 #' @export
@@ -12,6 +14,13 @@ dist_setup <- function(dist_shape = NULL, dist_scale = NULL) {
   out <- purrr::partial(rweibull,
                  shape = dist_shape,
                  scale = dist_scale)
+  return(out)
+}
+
+dist_setup2 <- function(dist_mean = NULL, dist_k = NULL) {
+  out <- purrr::partial(rgamma,
+                        shape = dist_k,
+                        scale = dist_mean/dist_k)
   return(out)
 }
 
