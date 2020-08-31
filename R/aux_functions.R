@@ -87,6 +87,12 @@ parameter_setup <- function(rel.infectiousness.c = NULL, rel.susceptibility.c = 
   
 }
 
+# set up different files for each sim
+output_csv <- function(data, sim.num){
+  fwrite(data, paste0("./output/sim", sim.num, ".csv"),
+         col.names = FALSE)
+}
+
 #' Calculate proportion of runs that have controlled outbreak
 #'
 #' @author Joel Hellewell

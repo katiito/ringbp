@@ -53,7 +53,7 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
  
   # Run n.sim number of model runs and put them all together in a big data.frame
   
-  res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
+  tt <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
                                                    prop.ascertain = prop.ascertain,
                                                    cap_max_days = cap_max_days,
                                                    cap_cases = cap_cases,
@@ -86,16 +86,17 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   #                                            quarantine = quarantine))
 
 
-  # bind output together and add simulation index
-  res <- data.table::rbindlist(res, idcol = "sim.number")
+  ## output table/s for FAVITES
   
+  # extract the infection events and times and fix index case
+  tt <- purrr::map(tt, ~
+                     select(., infector, caseid, exposure) %>%
+                     mutate(., infector = replace(infector, infector==0, "None")))
+  # write to separate files
+  list(data = tt, sim.num = 1:n.sim) %>%
+    purrr::pmap(output_csv)
+
+ 
   # res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]
-  return(res)
-  
-  # output table for FAVITES
-  listin <- c(tt$infector, tt$caseid, tt$exposure)
-  listout <- matrix(listin, length(tt$infector), 3)
-  listout[listout[,1]==0,1] <- "None"
-  write.table(listout, "transmission_network.csv", row.names = FALSE, col.names=FALSE, sep = "\t")
-  
+  return(tt)
 }
