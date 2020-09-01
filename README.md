@@ -4,7 +4,7 @@ This code has been adapted from cmmid/ringbp developed by @jhellewell14
 
 ## Usage (1): using pre-run simulated networks
 
-Load one of files ```sim1```, ```sim2``` etc. as the ```transmission_network_file``` in FAVITES. 
+Load one of files ```output/sim1```, ```output/sim2``` etc. as a ```transmission_network_file``` in FAVITES. 
 
 ## Usage (2): Running with different parameters
 
