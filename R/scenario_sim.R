@@ -70,7 +70,7 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   ## output table/s for FAVITES
   
   
-  # extract the infection events and times and fix index case
+  # extract the infection events and times, fix index case and sort by time
   inf <- purrr::map(tt, ~
                      select(., infector, caseid, exposure) %>%
                      mutate(., infector = replace(infector, infector==0, "None")))
@@ -78,9 +78,11 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                      select(., infector = caseid, caseid = caseid, exposure = endinfectious) %>%
                      mutate(infector = as.character(infector)))
   din <- purrr::map2(inf, rem, ~bind_rows(.x,.y))
+  sortin <- purrr::map(din, 
+                        ~ .x[order(.x[, "exposure"]), ])
   
   # write to separate files
-  list(data = din, sim.num = 1:n.sim) %>%
+  list(data = sortin, sim.num = 1:n.sim) %>%
     purrr::pmap(output_csv)
   
   # res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
