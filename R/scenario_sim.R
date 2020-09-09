@@ -3,6 +3,7 @@ source("R/outbreak_setup.R")
 source("R/outbreak_step.R")
 source("R/outbreak_model.R")
 source("R/aux_functions.R")
+source("R/parameter_setup.R")
 
 #' Run a specified number of simulations with identical parameters
 #' @author Joel Hellewell / Katie Atkins
@@ -69,7 +70,7 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   
   ## output table/s for FAVITES
   
-  
+  # TransmissionTree File
   # extract the infection events and times, fix index case and sort by time
   inf <- purrr::map(tt, ~
                      select(., infector, caseid, exposure) %>%
@@ -82,7 +83,15 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                         ~ .x[order(.x[, "exposure"]), ])
   
   # write to separate files
-  list(data = sortin, sim.num = 1:n.sim) %>%
+  list(data = sortin, sim.num = 1:n.sim, rep("transmission_network", n.sim)) %>%
+    purrr::pmap(output_csv)
+  
+  # SampleTimes File
+  sin <- purrr::map(tt, ~
+                      select(., caseid, sample))
+                    
+  # write to separate files
+  list(data = sin, sim.num = 1:n.sim, rep("sample_times", n.sim)) %>%
     purrr::pmap(output_csv)
   
   # res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,

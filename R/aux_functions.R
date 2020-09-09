@@ -97,8 +97,8 @@ parameter_setup <- function(rel.infectiousness.c = NULL, rel.susceptibility.c = 
 }
 
 # set up different files for each sim
-output_csv <- function(data, sim.num){
-  fwrite(data, paste0("./output/sim", sim.num, ".csv"),
+output_csv <- function(data, sim.num, file.name){
+  fwrite(data, paste0("./output/",file.name, sim.num, ".csv"),
          col.names = FALSE)
 }
 
