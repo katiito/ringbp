@@ -94,6 +94,14 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   list(data = sin, sim.num = 1:n.sim, rep("sample_times", n.sim)) %>%
     purrr::pmap(output_csv)
   
+  # ContactNetwork File
+  cin <- purrr::map(tt, ~
+                      select(., infector, caseid))
+  
+  # write to separate files
+  list(data = cin, sim.num = 1:n.sim, rep("contact_network", n.sim)) %>%
+    purrr::pmap(output_csv)
+  
   # res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
   #                                            prop.ascertain = prop.ascertain,
   #                                            cap_max_days = cap_max_days,
