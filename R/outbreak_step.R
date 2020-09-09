@@ -115,6 +115,11 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
                                            function(x, y) {
                                              rep(x, as.integer(y))
                                              })),
+    # records when infector was sampled
+    infector_sample_time = unlist(purrr::map2(new_case_data$sample, new_case_data$new_cases,
+                                           function(x, y) {
+                                             rep(x, as.integer(y))
+                                           })),
     # records if infector asymptomatic
     infector_asym = unlist(purrr::map2(new_case_data$asym, new_case_data$new_cases,
                                        function(x, y) {
@@ -148,7 +153,7 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
                         purrr::rbernoulli(n = total_new_cases - sum(prob_samples$asym), p = prop.seq)
   
   
-  prob_samples <- prob_samples[exposure < infector_iso_time][, # filter out new cases prevented by isolation
+  prob_samples <- prob_samples[exposure < min(infector_iso_time, infector_sample_time)][, # filter out new cases prevented by isolation
                                              `:=`(# onset of new case is exposure + incubation period sample
                                                onset = exposure + incubfn_sample)]
   
