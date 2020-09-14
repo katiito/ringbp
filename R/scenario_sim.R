@@ -95,12 +95,24 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
     purrr::pmap(output_csv)
   
   # ContactNetwork File
-  cin <- purrr::map(tt, ~
-                      select(., infector, caseid))
+  cin1 <- purrr::map(tt, ~
+                       select(., caseid)  %>%
+                       mutate(location = ".", net.type = "NODE") %>%
+                       mutate(first = net.type, second = as.character(caseid), third = location, fourth = "", fifth = "") %>%
+                       select(first, second, third, fourth, fifth))
+  
+  cin2 <- purrr::map(tt, ~
+                      select(., infector, caseid) %>%
+                      mutate(location = ".", dir.type = "u", net.type = "EDGE") %>%
+                      mutate(first = net.type, second = as.character(infector), third = as.character(caseid), fourth = location, fifth = dir.type) %>%
+                      select(first, second, third, fourth, fifth))
+  
+  cin <- purrr::map2(cin1, cin2, ~bind_rows(.x,.y))
   
   # write to separate files
-  list(data = cin, sim.num = 1:n.sim, rep("contact_network", n.sim)) %>%
-    purrr::pmap(output_csv)
+  
+  list(data = cin, sim.num = 1:n.sim, file.name = rep("contact_network", n.sim)) %>%
+     purrr::pmap(output_csv)
   
   # res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
   #                                            prop.ascertain = prop.ascertain,
