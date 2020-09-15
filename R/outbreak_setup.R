@@ -30,6 +30,8 @@ outbreak_setup <- function(num.initial.cases, initial.case.adult, incfn, delayfn
   inc_samples <- incfn(num.initial.cases)
   sample_samples <- samplefn(num.initial.cases)
   infectious_samples <- infectiousfn(num.initial.cases)
+  
+  
 
   case_data <- data.table(exposure = rep(0, num.initial.cases), # Exposure time of 0 for all initial cases
                           asym = purrr::rbernoulli(num.initial.cases, prop.asym),
@@ -51,4 +53,5 @@ outbreak_setup <- function(num.initial.cases, initial.case.adult, incfn, delayfn
 
   # return
   return(case_data)
+
 }

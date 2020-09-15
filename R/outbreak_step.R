@@ -100,11 +100,16 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
   infectious_samples <- infectiousfn(total_new_cases) 
   
   prob_samples <- data.table(
-    # time when new cases were exposed, a draw from serial interval based on infector's onset
-    exposure = unlist(purrr::map2(new_case_data$new_cases, new_case_data$onset,
+    # # time when new cases were exposed, a draw from serial interval based on infector's onset
+    # exposure = unlist(purrr::map2(new_case_data$new_cases, new_case_data$onset,
+    #                               function(x, y) {
+    #                                 inf_fn(rep(y, x), k)
+    #                                 })),
+    # alternative parameterisation: time when new cases were exposed, a draw from generation time based on infector's exposure
+    exposure = unlist(purrr::map2(new_case_data$new_cases, new_case_data$exposure,
                                   function(x, y) {
-                                    inf_fn(rep(y, x), k)
-                                    })),
+                                    inf_fn_gentime(rep(y, x), k)
+                                  })),
     # records the infector of each new person
     infector = unlist(purrr::map2(new_case_data$caseid, new_case_data$new_cases,
                                   function(x, y) {
@@ -143,6 +148,8 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
     incubfn_sample = inc_samples,
     # sample from the testing delay period for each new person
     delaysamplefn_sample = sampdelay_samples,
+    # sample from the infectious duration for each new person
+    infectiousfn_sample = infectious_samples,
     isolated = FALSE,
     new_cases = NA,
     sequenced = FALSE
@@ -153,10 +160,15 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
                         purrr::rbernoulli(n = total_new_cases - sum(prob_samples$asym), p = prop.seq)
   
   
-  prob_samples <- prob_samples[exposure < min(infector_iso_time, infector_sample_time)][, # filter out new cases prevented by isolation
+  prob_samples <- prob_samples[exposure < infector_iso_time][, # filter out new cases prevented by isolation
                                              `:=`(# onset of new case is exposure + incubation period sample
                                                onset = exposure + incubfn_sample)]
   
+  # alternative where filter out cases if infector after sampled (i.e. no transmission once tested)
+  # prob_samples <- prob_samples[exposure < min(infector_iso_time, infector_sample_time)][, # filter out new cases prevented by isolation
+  #                                                                                       `:=`(# onset of new case is exposure + incubation period sample
+  #                                                                                         onset = exposure + incubfn_sample)]
+  # 
   # set the time sample taken for sequencing for each individual
   prob_samples[, sample := onset + delaysamplefn_sample] 
   
@@ -177,13 +189,16 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
                                                       vect_min(onset + delayfn(1), vect_max(onset, infector_iso_time)),
                                                       infector_iso_time)))]
   
-  # If you are sampled, then stop being infectious when sampled, otherwise delayed
-  prob_samples[, endinfectious := ifelse(vect_isTRUE(sequenced), sample,
-                                         onset + infectious_samples)]
-                                         
+  # If you are sampled, then doesn't change when you are infectious
+   prob_samples[, endinfectious := onset + infectiousfn_sample]
+  # Alternative: If you are sampled, then stop being infectious when sampled, otherwise delayed
+  # prob_samples[, endinfectious := ifelse(vect_isTRUE(sequenced), sample,
+  #                                        onset + infectiousfn_sample)]
+   
+  
 
   # Chop out unneeded sample columns
-  prob_samples[, c("incubfn_sample", "infector_iso_time", "infector_asym", "delaysamplefn_sample", "infector_sample_time") := NULL]
+  prob_samples[, c("incubfn_sample", "infectiousfn_sample", "infector_iso_time", "infector_asym", "delaysamplefn_sample", "infector_sample_time") := NULL]
   # Set new case ids for new people
   prob_samples$caseid <- (nrow(case_data) + 1):(nrow(case_data) + nrow(prob_samples))
 
@@ -195,7 +210,8 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
 
   # Everyone in case_data so far has had their chance to infect and are therefore considered isolated
   case_data$isolated <- TRUE
-
+  
+  
   # bind original cases + new secondary cases
   case_data <- data.table::rbindlist(list(case_data, prob_samples),
                                      use.names = TRUE)

@@ -47,6 +47,19 @@ inf_fn <- function(inc_samp = NULL, k = NULL) {
   return(out)
 }
 
+# sample from generation time to identify when new cases exposed
+inf_fn_gentime <- function(inc_samp = NULL, k = NULL) {
+  
+  
+  out <- rnorm(n = length(inc_samp),
+               mean = inc_samp + 5.2,
+               sd = rep(0.7, length(inc_samp)))
+  
+  out <- ifelse(out < 1, 1, out)
+  
+  return(out)
+}
+
 adult_fn <- function(inc = NULL, R.adult = NULL, R.child = NULL, disp.com = NULL) {
   
   # calculate the prob of inc offspring from both adult and child distributions
@@ -100,7 +113,16 @@ parameter_setup <- function(rel.infectiousness.c = NULL, rel.susceptibility.c = 
 output_csv <- function(data, sim.num, file.name){
   fwrite(data, 
          paste0("./output/",file.name, sim.num, ".csv"),
-         col.names = FALSE)
+         col.names = FALSE,
+         sep = "\t")
+}
+
+output_csv_append <- function(data, sim.num, file.name){
+  fwrite(data, 
+         paste0("./output/",file.name, sim.num, ".csv"),
+         col.names = FALSE,
+         append = TRUE,
+         sep = "\t")
 }
 
 #' Calculate proportion of runs that have controlled outbreak
