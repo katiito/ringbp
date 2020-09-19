@@ -198,7 +198,7 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
   
 
   # Chop out unneeded sample columns
-  prob_samples[, c("incubfn_sample", "infectiousfn_sample", "infector_iso_time", "infector_asym", "delaysamplefn_sample", "infector_sample_time") := NULL]
+  prob_samples[, c("incubfn_sample", "infectiousfn_sample", "infector_iso_time", "infector_asym", "delaysamplefn_sample") := NULL]
   # Set new case ids for new people
   prob_samples$caseid <- (nrow(case_data) + 1):(nrow(case_data) + nrow(prob_samples))
 

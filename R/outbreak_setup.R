@@ -43,7 +43,8 @@ outbreak_setup <- function(num.initial.cases, initial.case.adult, incfn, delayfn
                           onset = inc_samples,
                           sample = sample_samples + inc_samples,
                           endinfectious = inc_samples + infectious_samples,
-                          new_cases = NA)
+                          new_cases = NA,
+                          infector_sample_time = NA)
 
   # set isolation time for cluster to minimum time of onset of symptoms + draw from delay distribution
   case_data <- case_data[, isolated_time := onset + delayfn(1)

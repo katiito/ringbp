@@ -76,16 +76,17 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                      select(., infector, caseid, exposure) %>%
                      mutate(., infector = replace(infector, infector==0, "None")))
   rem <- purrr::map(tt, ~
-                     group_by(., infector) %>%
+                     mutate(., exposure = pmax(exposure, infector_sample_time)) %>%
+                     group_by(., infector)  %>%
                      summarise(lasttransmissiontime = max(exposure), .groups = "drop") %>%
                      slice(., -1) %>%
                      ungroup() %>%
                      select(., infector = infector, caseid = infector, exposure = lasttransmissiontime) %>%
-                     mutate(infector = as.character(infector), exposure = exposure + 0.0001))
-  
+                     mutate(., infector = as.character(infector), exposure = exposure + 0.0001) %>%
+                     select(., infector, caseid, exposure))
   din <- purrr::map2(inf, rem, ~bind_rows(.x,.y))
   sortin <- purrr::map(din, 
-                        ~ .x[order(.x[, "exposure"]), ])
+                         ~ .x[order(.x[, "exposure"]), ])
   
   # write to separate files
   list(data = sortin, sim.num = 1:n.sim, rep("transmission_network", n.sim)) %>%
