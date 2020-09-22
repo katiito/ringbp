@@ -4,7 +4,13 @@ This code has been adapted from cmmid/ringbp developed by @jhellewell14
 
 ## Usage (1): using pre-run simulated networks
 
-Load one of files ```output/sim1```, ```output/sim2``` etc. as a ```transmission_network_file``` in FAVITES. 
+For use with FAVITES, three files are needed. 
+
+1. ```output/transmission_network.csv``` as a ```transmission_network_file```
+2. ```output/sample_times.csv``` as a ```sampling_times_file```
+3. ```output/contact_network.csv``` as a ```contact_network_file```
+
+Note that the numerical suffix must be the same for each set of files as it refers to the same simulation number (e.g. ```transmission_network2.csv```, ```sample_times2.csv```, ```contact_network2.csv```)
 
 ## Usage (2): Running with different parameters
 
