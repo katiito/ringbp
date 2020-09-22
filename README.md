@@ -12,6 +12,7 @@ Set your working directory to the home directory of this project
 
 ```r
 library(data.table)
+library(dplyr)
 source("R/scenario_sim.R")
 ```
 
