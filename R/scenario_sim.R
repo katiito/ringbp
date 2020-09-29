@@ -67,7 +67,7 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                                                    prop.asym = prop.asym,
                                                    prop.seq = prop.seq,
                                                    quarantine = quarantine)) %>%
-         purrr::keep(~ dim(.x)[1] > cap_cases)
+         purrr::keep(~ dim(.x)[1] > 100)
   
   ## output table/s for FAVITES
 
