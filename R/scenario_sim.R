@@ -66,63 +66,67 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                                                    k = k,
                                                    prop.asym = prop.asym,
                                                    prop.seq = prop.seq,
-                                                   quarantine = quarantine))
+                                                   quarantine = quarantine)) %>%
+         purrr::keep(~ dim(.x)[1] > cap_cases)
   
   ## output table/s for FAVITES
-  
+
   # TransmissionTree File
   # extract the infection events and times, fix index case and sort by time
   inf <- purrr::map(tt, ~
                      select(., infector, caseid, exposure) %>%
                      mutate(., infector = replace(infector, infector==0, "None")))
   rem <- purrr::map(tt, ~
+                     # recovery time for last infector is set to the final sample time
+                     mutate(., exposure = replace(exposure, infector==max(infector), max(sample))) %>%
+                      # mutate(., exposure = sample) %>%
                      mutate(., exposure = pmax(exposure, infector_sample_time)) %>%
                      group_by(., infector)  %>%
-                     summarise(lasttransmissiontime = max(exposure), .groups = "drop") %>%
+                     summarise(lasttransmissiontime = max(exposure), .groups = "drop") %>% # recovery time for infector is final infection/sample time max
                      slice(., -1) %>%
                      ungroup() %>%
                      select(., infector = infector, caseid = infector, exposure = lasttransmissiontime) %>%
                      mutate(., infector = as.character(infector), exposure = exposure + 0.0001) %>%
                      select(., infector, caseid, exposure))
   din <- purrr::map2(inf, rem, ~bind_rows(.x,.y))
-  sortin <- purrr::map(din, 
+  sortin <- purrr::map(din,
                          ~ .x[order(.x[, "exposure"]), ])
-  
+
   # write to separate files
-  list(data = sortin, sim.num = 1:n.sim, rep("transmission_network", n.sim)) %>%
+  list(data = sortin, sim.num = 1:length(tt), rep("transmission_network", length(tt))) %>%
     purrr::pmap(output_csv)
-  
+
   # SampleTimes File
   sin <- purrr::map(tt, ~
                       select(., caseid, sample))
-                    
+
   # write to separate files
-  list(data = sin, sim.num = 1:n.sim, rep("sample_times", n.sim)) %>%
+  list(data = sin, sim.num = 1:length(tt), rep("sample_times", length(tt))) %>%
     purrr::pmap(output_csv)
-  
+
   # ContactNetwork File
   cin1 <- purrr::map(tt, ~
                        select(., caseid)  %>%
                        mutate(location = ".", net.type = "NODE") %>%
                        mutate(first = net.type, second = as.character(caseid), third = location) %>%
                        select(first, second, third))
-  
+
   cin2 <- purrr::map(tt, ~
                       select(., infector, caseid) %>%
                       mutate(location = ".", dir.type = "u", net.type = "EDGE") %>%
                       mutate(first = net.type, second = as.character(infector), third = as.character(caseid), fourth = location, fifth = dir.type) %>%
                       select(first, second, third, fourth, fifth) %>%
                       slice(., -1))
-  
+
   # cin <- purrr::map2(cin1, cin2, ~bind_rows(.x,.y))
-  
+
   # write to separate files
-  
-  list(data = cin1, sim.num = 1:n.sim, file.name = rep("contact_network", n.sim)) %>%
+
+  list(data = cin1, sim.num = 1:length(tt), file.name = rep("contact_network", length(tt))) %>%
      purrr::pmap(output_csv)
-  list(data = cin2, sim.num = 1:n.sim, file.name = rep("contact_network", n.sim)) %>%
+  list(data = cin2, sim.num = 1:length(tt), file.name = rep("contact_network", length(tt))) %>%
     purrr::pmap(output_csv_append)
-  
+
   # res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
   #                                            prop.ascertain = prop.ascertain,
   #                                            cap_max_days = cap_max_days,
@@ -138,9 +142,9 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   #                                            quarantine = quarantine))
 
 
-  
 
- 
+
+
   # res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]
   return(tt)
 }
