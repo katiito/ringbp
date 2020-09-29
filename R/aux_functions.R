@@ -125,6 +125,13 @@ output_csv_append <- function(data, sim.num, file.name){
          sep = "\t")
 }
 
+output_csv_header <- function(data, sim.num, file.name){
+  fwrite(data, 
+         paste0("./output/",file.name, sim.num, ".csv"),
+         col.names = TRUE,
+         sep = "\t")
+}
+
 #' Calculate proportion of runs that have controlled outbreak
 #'
 #' @author Joel Hellewell

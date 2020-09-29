@@ -79,7 +79,6 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   rem <- purrr::map(tt, ~
                      # recovery time for last infector is set to the final sample time
                      mutate(., exposure = replace(exposure, infector==max(infector), max(sample))) %>%
-                      # mutate(., exposure = sample) %>%
                      mutate(., exposure = pmax(exposure, infector_sample_time)) %>%
                      group_by(., infector)  %>%
                      summarise(lasttransmissiontime = max(exposure), .groups = "drop") %>% # recovery time for infector is final infection/sample time max
@@ -121,7 +120,6 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   # cin <- purrr::map2(cin1, cin2, ~bind_rows(.x,.y))
 
   # write to separate files
-
   list(data = cin1, sim.num = 1:length(tt), file.name = rep("contact_network", length(tt))) %>%
      purrr::pmap(output_csv)
   list(data = cin2, sim.num = 1:length(tt), file.name = rep("contact_network", length(tt))) %>%
@@ -141,8 +139,9 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   #                                            prop.asym = prop.asym,
   #                                            quarantine = quarantine))
 
-
-
+  # output data tables
+  list(data = tt, sim.num = 1:length(tt), file.name = rep("data_table", length(tt))) %>%
+    purrr::pmap(output_csv_header)
 
 
   # res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]
