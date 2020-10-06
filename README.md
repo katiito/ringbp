@@ -83,8 +83,9 @@ A transmission chain is generated using a branching process model. The following
 - The 2x2 matrix *N = N_{i,j}* provides the mean number of infections in group *j* caused by an infection in age group *i*
 - The branching process offspring distribution for each infection in age group *i* to age group *j* ~ negbin(mean = *N_{i,j}*, disp.comm) where disp.comm is the dispersion parameter for the reproductive numbers.
 
-- There is a fixed probability that a case is sequenced (conditional on their being symptomatic)
-- There is a fixed probability that an infection is symptomatic
-- There is a delay from onset of symptoms to being sampled/sequenced
+- There is an age-dependent fixed probability that a case is sequenced (conditional on their being symptomatic)
+- There is an age-dependent fixed probability that an infection is symptomatic
+- If sampled, there is a delay from onset of any symptoms to being sampled
+- Transmission occurs regardless of if/ when sampled
 
 
