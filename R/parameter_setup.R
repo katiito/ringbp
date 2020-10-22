@@ -12,7 +12,7 @@
 parameter_setup <- function(rel.infectiousness.c = NULL, rel.susceptibility.c = NULL, r0community = NULL){
 
   
-      # relative contact rates of children(0-20y) and adults (21+y)
+      # relative contact rates of children (0-20y) and adults (21+y)
       rel.contactrate.cc <- 1.0000000
       rel.contactrate.ca <- 0.7938829
       rel.contactrate.ac <- 0.2584824
@@ -34,6 +34,7 @@ parameter_setup <- function(rel.infectiousness.c = NULL, rel.susceptibility.c = 
                       r0community_ca = ngm[1,2],
                       r0community_ac = ngm[2,1],
                       r0community_aa = ngm[2,2])
+      
       return(out)
       
       

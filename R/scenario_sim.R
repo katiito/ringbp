@@ -98,8 +98,6 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   # SampleTimes File
   sin <- purrr::map(tt, ~
                       select(., caseid, sample))
-
-  # write to separate files
   list(data = sin, sim.num = 1:length(tt), rep("sample_times", length(tt))) %>%
     purrr::pmap(output_csv)
 
@@ -117,9 +115,6 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                       select(first, second, third, fourth, fifth) %>%
                       slice(., -1))
 
-  # cin <- purrr::map2(cin1, cin2, ~bind_rows(.x,.y))
-
-  # write to separate files
   list(data = cin1, sim.num = 1:length(tt), file.name = rep("contact_network", length(tt))) %>%
      purrr::pmap(output_csv)
   list(data = cin2, sim.num = 1:length(tt), file.name = rep("contact_network", length(tt))) %>%
@@ -143,7 +138,28 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
   list(data = tt, sim.num = 1:length(tt), file.name = rep("data_table", length(tt))) %>%
     purrr::pmap(output_csv_header)
 
+  # output parameters
+  ## code here to output a file with parameters to match to the birth-death model estimates
+  count <- purrr::map(tt, ~
+                       group_by(., adult, infector_adult, .drop = FALSE) %>%
+                       summarise(., n = n(), .groups = "drop") %>%
+                        ungroup() %>%
+                        filter(., !is.na(infector_adult)) %>%
+                       mutate(adult = ifelse(adult == TRUE, "adult", "child"),
+                              infector_adult = ifelse(infector_adult == TRUE, "adult", "child")) %>%
+                       mutate(variable = paste(infector_adult, " to ", adult)) %>%
+                      select(variable, n) %>%
+                      spread(., variable, n))
+                      
 
+  count <- count %>% 
+    bind_rows(.) %>%
+    replace(is.na(.), 0)
+  
+  # output data tables
+  list(data = list(count), 1, file.name = "counts") %>%
+    purrr::pmap(output_csv_header)
+  
   # res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]
   return(tt)
 }

@@ -130,6 +130,11 @@ outbreak_step <- function(case_data = NULL, disp.iso = NULL, disp.com = NULL, r0
                                        function(x, y) {
                                          rep(x, y)
                                          })),
+    # records if infector asymptomatic
+    infector_adult = unlist(purrr::map2(new_case_data$adult, new_case_data$new_cases,
+                                       function(x, y) {
+                                         rep(x, y)
+                                       })),
     # records whether each new case is an adult dpt on adult=T for the infector
     adult = unlist(purrr::map2(new_case_data$new_cases, 
                                new_case_data$adult,
